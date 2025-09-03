@@ -28,7 +28,7 @@ while True:
     annotated = results[0].plot()  
 
     poly = polygons[0].astype(np.int32)
-
+    
     cv2.polylines(annotated, [poly], isClosed=True, color=(0, 0, 255), thickness=2)
 
     try:
@@ -54,6 +54,8 @@ while True:
         cv2.putText(annotated, f"ID:{obj_id}", (x1, y1 - 8), font, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
 
         inside = cv2.pointPolygonTest(poly, (cx, cy), False) >= 0  
+        if inside:
+            current_inside_ids.add(obj_id)
 
         prev = last_inside.get(obj_id, False)
         if inside and not prev:
@@ -61,9 +63,6 @@ while True:
             unique_ids_seen.add(obj_id)  
 
         last_inside[obj_id] = inside
-
-        if inside:
-            current_inside_ids.add(obj_id)
 
     for known_id in list(last_inside.keys()):
         if known_id not in present_ids:
